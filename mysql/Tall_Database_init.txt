@@ -1,0 +1,75 @@
+CREATE TABLE `tall`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nimi` VARCHAR(255) NOT NULL,
+    `aadress` BIGINT NOT NULL
+);
+CREATE TABLE `talliboksid`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `num` VARCHAR(255) NOT NULL,
+    `töötaja` BIGINT UNSIGNED NOT NULL
+);
+CREATE TABLE `töögraafikud`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nimi` VARCHAR(255) NOT NULL,
+    `kirjeldus` VARCHAR(255) NOT NULL,
+    `kuupäev` DATE NOT NULL,
+    `töötajaID` BIGINT UNSIGNED NOT NULL
+);
+CREATE TABLE `talli_varustus`(
+    `id` VARCHAR(255) NOT NULL,
+    `nimi` VARCHAR(255) NOT NULL,
+    `varustus` VARCHAR(255) NOT NULL,
+    `TallID` BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY(`id`)
+);
+CREATE TABLE `Hobused`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nimi` VARCHAR(255) NOT NULL,
+    `omanikID` BIGINT UNSIGNED NOT NULL,
+    `vanus` BIGINT UNSIGNED NOT NULL,
+    `talliboksID` BIGINT UNSIGNED NOT NULL,
+    `tallID` BIGINT UNSIGNED NOT NULL
+);
+CREATE TABLE `treeningud`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `TöötajaID` BIGINT UNSIGNED NOT NULL,
+    `kuupäev` DATE NOT NULL,
+    `HobuseID` BIGINT UNSIGNED NOT NULL,
+    `kirjeldus` VARCHAR(255) NOT NULL
+);
+CREATE TABLE `omanikud`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `omanik` VARCHAR(255) NOT NULL,
+    `Aadress` VARCHAR(255) NOT NULL,
+    `telefon` BIGINT NOT NULL
+);
+CREATE TABLE `töötajad`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `nimi` VARCHAR(255) NOT NULL
+);
+CREATE TABLE `protsetuuride_ajalugu`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `HobuseNimi` VARCHAR(255) NOT NULL,
+    `protseduur` VARCHAR(255) NOT NULL,
+    `kommentaar` VARCHAR(1000) NOT NULL,
+    `kuupäev` DATE NOT NULL,
+    `HobuseID` BIGINT UNSIGNED NOT NULL
+);
+ALTER TABLE
+    `Hobused` ADD CONSTRAINT `hobused_tallid_foreign` FOREIGN KEY(`tallID`) REFERENCES `tall`(`id`);
+ALTER TABLE
+    `Hobused` ADD CONSTRAINT `hobused_omanikid_foreign` FOREIGN KEY(`omanikID`) REFERENCES `omanikud`(`id`);
+ALTER TABLE
+    `treeningud` ADD CONSTRAINT `treeningud_töötajaid_foreign` FOREIGN KEY(`TöötajaID`) REFERENCES `töötajad`(`id`);
+ALTER TABLE
+    `protsetuuride_ajalugu` ADD CONSTRAINT `protsetuuride_ajalugu_hobuseid_foreign` FOREIGN KEY(`HobuseID`) REFERENCES `Hobused`(`id`);
+ALTER TABLE
+    `töögraafikud` ADD CONSTRAINT `töögraafikud_töötajaid_foreign` FOREIGN KEY(`töötajaID`) REFERENCES `töötajad`(`id`);
+ALTER TABLE
+    `treeningud` ADD CONSTRAINT `treeningud_hobuseid_foreign` FOREIGN KEY(`HobuseID`) REFERENCES `Hobused`(`id`);
+ALTER TABLE
+    `talliboksid` ADD CONSTRAINT `talliboksid_töötaja_foreign` FOREIGN KEY(`töötaja`) REFERENCES `töötajad`(`id`);
+ALTER TABLE
+    `Hobused` ADD CONSTRAINT `hobused_talliboksid_foreign` FOREIGN KEY(`talliboksID`) REFERENCES `talliboksid`(`id`);
+ALTER TABLE
+    `talli_varustus` ADD CONSTRAINT `talli_varustus_tallid_foreign` FOREIGN KEY(`TallID`) REFERENCES `tall`(`id`);
