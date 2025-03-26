@@ -1,8 +1,0 @@
-use ta23anorm;
-
--- Create a cleaned version of ta23e without duplicates
-CREATE TABLE ta23anorm.cleaned_data AS
-SELECT DISTINCT *
-FROM ta23e;
-
-
