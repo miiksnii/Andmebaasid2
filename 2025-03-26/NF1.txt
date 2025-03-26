@@ -1,0 +1,13 @@
+use ta23anorm;
+
+-- Create a table for normalized genres NF1
+CREATE TABLE ta23anorm.genres_normalized AS
+SELECT DISTINCT
+    tconst,
+    SUBSTRING_INDEX(ta23e.genres, ',', numbers.n) AS genre,
+    numbers.n
+FROM
+    (SELECT 1 n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) numbers
+INNER JOIN ta23anorm.cleaned_data ta23e
+    ON CHAR_LENGTH(ta23e.genres) - CHAR_LENGTH(REPLACE(ta23e.genres, ',', '')) >= numbers.n - 1
+ORDER BY tconst, n;

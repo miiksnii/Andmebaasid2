@@ -1,0 +1,47 @@
+-- Drop the foreign key constraint on the genres table before dropping it
+ALTER TABLE ta23anorm.genres DROP FOREIGN KEY genres_ibfk_1;
+
+-- Check if the genres_normalized table exists and drop it if it does
+DROP TABLE IF EXISTS ta23anorm.genres_normalized;
+
+-- Check if the genres table exists and drop it if it does
+DROP TABLE IF EXISTS ta23anorm.genres;
+
+-- Check if the movies table exists and drop it if it does
+DROP TABLE IF EXISTS ta23anorm.movies;
+
+-- Create the genres_normalized table (as before)
+CREATE TABLE ta23anorm.genres_normalized AS
+SELECT DISTINCT
+    tconst,
+    SUBSTRING_INDEX(ta23e.genres, ',', numbers.n) AS genre,
+    numbers.n
+FROM
+    (SELECT 1 n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4) numbers
+INNER JOIN ta23anorm.cleaned_data ta23e
+    ON CHAR_LENGTH(ta23e.genres) - CHAR_LENGTH(REPLACE(ta23e.genres, ',', '')) >= numbers.n - 1
+ORDER BY tconst, n;
+
+-- Create a table for movies if it doesn't exist (with the necessary columns)
+CREATE TABLE IF NOT EXISTS ta23anorm.movies (
+    tconst VARCHAR(50) PRIMARY KEY,
+    title VARCHAR(255),
+    year INT
+);
+
+-- Create a table for genres if it doesn't exist (with the necessary columns)
+CREATE TABLE IF NOT EXISTS ta23anorm.genres (
+    tconst VARCHAR(50),
+    genre VARCHAR(100),
+    FOREIGN KEY (tconst) REFERENCES ta23anorm.movies(tconst)
+);
+
+-- Insert data into the movies table from cleaned_data
+INSERT INTO ta23anorm.movies (tconst, title, year)
+SELECT DISTINCT tconst, primaryTitle AS title, startYear AS year
+FROM ta23anorm.cleaned_data;
+
+-- Insert data into the genres table from genres_normalized
+INSERT INTO ta23anorm.genres (tconst, genre)
+SELECT tconst, genre
+FROM ta23anorm.genres_normalized;
