@@ -1,0 +1,57 @@
+-- Create a table for directors
+CREATE TABLE IF NOT EXISTS ta23anorm.directors (
+    nconst VARCHAR(12) PRIMARY KEY,
+    primaryName VARCHAR(128),
+    birthYear INT,
+    deathYear VARCHAR(4)
+);
+
+-- Insert director data into the directors table
+INSERT INTO ta23anorm.directors (nconst, primaryName, birthYear, deathYear)
+SELECT DISTINCT nconst, primaryName, birthYear, deathYear
+FROM ta23anorm.cleaned_data;
+-- Create a table for the relationship between movies and directors
+CREATE TABLE IF NOT EXISTS ta23anorm.movies_directors (
+    tconst VARCHAR(50),
+    nconst VARCHAR(12),
+    PRIMARY KEY (tconst, nconst),
+    FOREIGN KEY (tconst) REFERENCES ta23anorm.movies(tconst),
+    FOREIGN KEY (nconst) REFERENCES ta23anorm.directors(nconst)
+);
+
+-- Insert movie-director relationship data
+INSERT INTO ta23anorm.movies_directors (tconst, nconst)
+SELECT DISTINCT tconst, nconst
+FROM ta23anorm.cleaned_data
+WHERE directors IS NOT NULL;
+-- Create a table for actors
+CREATE TABLE IF NOT EXISTS ta23anorm.actors (
+    nconst VARCHAR(12) PRIMARY KEY,
+    primaryName VARCHAR(128),
+    birthYear INT,
+    deathYear VARCHAR(4)
+);
+
+-- Insert actor data into the actors table
+INSERT INTO ta23anorm.actors (nconst, primaryName, birthYear, deathYear)
+SELECT DISTINCT nconst, primaryName, birthYear, deathYear
+FROM ta23anorm.cleaned_data;
+-- Create a table for the relationship between movies and actors
+CREATE TABLE IF NOT EXISTS ta23anorm.movies_actors (
+    tconst VARCHAR(50),
+    nconst VARCHAR(12),
+    PRIMARY KEY (tconst, nconst),
+    FOREIGN KEY (tconst) REFERENCES ta23anorm.movies(tconst),
+    FOREIGN KEY (nconst) REFERENCES ta23anorm.actors(nconst)
+);
+
+-- Insert movie-actor relationship data
+INSERT INTO ta23anorm.movies_actors (tconst, nconst)
+SELECT DISTINCT tconst, nconst
+FROM ta23anorm.cleaned_data
+WHERE category = 'actor';
+-- Optionally, drop unnecessary columns from the cleaned_data table
+ALTER TABLE ta23anorm.cleaned_data
+DROP COLUMN primaryName,
+DROP COLUMN birthYear,
+DROP COLUMN deathYear;
